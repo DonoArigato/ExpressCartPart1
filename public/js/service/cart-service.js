@@ -20,10 +20,12 @@ function CartService($http) {
   const updateCart = (cart) => {
     return $http({
       method: "PUT",
-      url: "/portal/cart/" + item.id,
+      url: "/portal/cart/" + cart.id,
       data: cart
+      
     });
   };
+  
 
   const deleteCart = (id) => {
     return $http({

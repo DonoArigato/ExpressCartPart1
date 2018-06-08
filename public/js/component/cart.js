@@ -11,10 +11,13 @@ const cart = {
 
      <form ng-submit="$ctrl.addCart($ctrl.newItem);">
       <input class="newProduct" type="text" placeholder="Product"  ng-model="$ctrl.newItem.product">
-      <input  class="newQuantity" type="text" placeholder="Quanity"  ng-model="$ctrl.newItem.quanity">
+      <input class="newQuantity" type="text" placeholder="Quanity"  ng-model="$ctrl.newItem.quantity">
       <input class="newPrice" type="text" placeholder="Price"    ng-model="$ctrl.newItem.price">
       <button> Add Product</button>
+      <button>Delete</button>
      </form>
+
+
     `,
   controller: ["CartService", function (CartService) {
     const vm = this;
@@ -22,8 +25,10 @@ const cart = {
       vm.cart = response.data;
     });
     vm.addCart = (newItem) => {
-      CartService.addCart(newItem).then((response) => {
-        vm.cart = response.data;
+      CartService.addCart(newItem).then(() => {
+        CartService.getCart().then(response => {
+          vm.cart = response.data;
+        })
       });
       vm.newItem = {};
     };

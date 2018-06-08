@@ -9,8 +9,17 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.16.3"
+    "express": "^4.16.3",
+    "pg": "^7.4.3"
   },
   "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DonoArigato/ExpressCartPart1.git"
+  },
+  "bugs": {
+    "url": "https://github.com/DonoArigato/ExpressCartPart1/issues"
+  },
+  "homepage": "https://github.com/DonoArigato/ExpressCartPart1#readme",
   "description": ""
 }

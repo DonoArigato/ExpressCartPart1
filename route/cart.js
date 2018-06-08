@@ -1,75 +1,62 @@
 "use strict";
 
 const express = require("express");
-
+const pg = require("pg");
+const pool = require("../pg-connection-pool")
 const cartRouter = express.Router();
-const cart = [{
-    product: "Ice Cream",
-    quanity: 3,
-    price: 4,
-    id: 0
-  },
-  {
-    product: "Spinach",
-    quanity: 2,
-    price: 3,
-    id: 1
-  },
-  {
-    product: "Waffle Mix",
-    quanity: 1,
-    price: 2,
-    id: 2
-  },
-  {
-    product: "Ground Turkey",
-    quanity: 2,
-    price: 6,
-    id: 3
-  }
 
-];
-let idCount = 4;
+
 
 cartRouter.get("/cart", (req, res) => {
-  res.send(cart);
+  pool.query('SELECT * FROM shoppingCart')
+    .then(result => {
+      res.send(result.rows)
+    })
+    .catch(error => {
+      res.send(error)
+    })
   console.log("GET WORKING");
 });
 
 cartRouter.post("/cart", (req, res) => {
-  cart.push({
+  let sql = "INSERT INTO shoppingCart (product, price, quantity)" +
+  "values($1::text, $2::int, $3::int);"
+  let values = [req.body.product, req.body.price, req.body.quantity];
+  pool.query(sql, values)
+    .then(result =>{
+      console.log(result.rows);
+      res.send(result.rows);
+    })
+    .catch(error => {
+      res.send(error);
+    })
 
-    product: req.body.product,
-    quanity: req.body.quanity,
-    price: req.body.price,
-    id: idCount++
-  });
-    console.log("POST WORKING");
-    res.send(cart);
 });
 
-cartRouter.delete("/cart/:id", (req, res) => {
-  for (let item of cart) {
-    if (item.id == req.params.id) {
-      cart.splice(cart.indexOf(item), 1);
-    }
-  }
-  console.log("DELETE WORKING");
-  res.send(cart);
+
+cartRouter.delete("/cart/:id", (req, res) => { 
+  pool.query("DELETE FROM shoppingCart WHERE id=$1::int",[req.params.id]).then(() => { 
+    pool.query("SELECT * FROM shoppingCart ORDER BY id").then((result) => { 
+      res.send(result.rows);
+      console.log("DELETE WORKING");
+      
+  });
+});
+
 });
 
 cartRouter.put("/cart/:id", (req, res) => {
-  for (let item of cart) {
-    if (item.id == req.params.id) {
-      cart.splice(cart.indexOf(item), 1, {
-        product: req.body.product,
-        quanity: req.body.quanity,
-        price: req.body.price,
-        id: item.id
+ pool.query("UPDATE shoppingCart SET product=$1::text,price=$2::int,quantity=$3::int WHERE id=$4::int",
+ [req.body.product,req.body.price,req.body.quantity,req.params.id]).then(()=> {
+      pool.query("SELECT * FROM shoppingCart ORDER BY id").then((result)=> {
+        res.send(result.rows);
       });
-    }
-  }
+    });
+  });
+     
+    
   console.log("PUT WORKING");
-  res.send(cart);
-});
+  
+
 module.exports = cartRouter;
+
